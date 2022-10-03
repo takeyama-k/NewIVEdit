@@ -1,0 +1,1174 @@
+﻿<Window x:Class="NewIVEdit.DataWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:NewIVEdit"
+        mc:Ignorable="d"
+        Title="DataWindow" Height="600" Width="950">
+    <Window.Resources>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="40"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <DockPanel Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Panel.ZIndex="100">
+            <Menu DockPanel.Dock="Top" VerticalAlignment="Center">
+                <MenuItem Header="ファイル">
+                    <MenuItem Header="Invoiceの Excelファイルを開く" Click="Menu_OpenInvoiceFile"/>
+                    <MenuItem Header="Packing Listの Excelファイルを開く" Click="Menu_OpenPackingListFile"/>
+                    <MenuItem Header="Pdfから読み取る" Click="Menu_ReadDataFromPdf"/>
+                    <MenuItem Header="サイドチャンネル" Click="Menu_OpenSideChannel"/>
+                </MenuItem>
+                <ComboBox x:Name="CompanyCombobox"
+                Height="30"
+                Width="250"
+                Margin="0"
+                FontSize="16"
+                HorizontalAlignment="Center">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding organizationno}" FontSize="15" Margin="0,0,0,0"/>
+                                <TextBlock Text="{Binding name}" FontSize="15" Margin="2,0,5,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                <ComboBox x:Name="CompanySubTypeCombobox"
+                Height="30"
+                Width="80"
+                Margin="0,0,0,0"
+                FontSize="16"
+                HorizontalAlignment="Center">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding description}" FontSize="15" Margin="0,0,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                <TextBox x:Name="SearchBox" Height="30" Width="130" FontSize="18" HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding SearchWord,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" Margin="5,0,0,0"/>
+                <ComboBox x:Name="InvoiceNoCombobox"
+                Height="30"
+                Width="200"
+                Margin="0,0,0,0"
+                FontSize="16"
+                HorizontalAlignment="Center">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding Key}" FontSize="15" Margin="0,0,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                <Button
+                Height="30"
+                Width="60"
+                Margin="60,0,0,0"
+                FontSize="18"
+                HorizontalAlignment="Center"
+                Click="OnClickExtract"
+                Content="抽出"/>
+            </Menu>
+        </DockPanel>
+        <TabControl Grid.Row="1" Margin="0,0,0.0,0" Grid.RowSpan="2">
+            <TabItem Header="Invoice" Margin="0,0,0,0">
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Margin="0,0,0,0">
+                    <StackPanel Orientation="Vertical" Margin="0,0,0,0">
+                    <StackPanel Orientation="Horizontal"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Panel.ZIndex="10">
+                        <TextBlock Height="30" Width="60" Margin="0" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" Text="合計" TextAlignment="Center"></TextBlock>
+                        <ComboBox x:Name="TradetermCombobox"
+                        Height="30"
+                        Width="80"
+                        Margin="0"
+                        FontSize="16"
+                        HorizontalAlignment="Center">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding Tradeterm}" FontSize="15" Margin="2,0,5,0"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        <TextBox Height="30" Width="240" FontSize="18" HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding FaceValue}" TextAlignment="Right" Margin="5,0,0,0"
+                     Background="{Binding FaceValueWarningMessage, Converter={StaticResource CellColorConverter}}">
+                            <TextBox.ToolTip>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding FaceValueWarningMessage}"/>
+                                </StackPanel>
+                            </TextBox.ToolTip>
+                            <TextBox.Style>
+                                <Style>
+                                    <Setter Property="ToolTipService.IsEnabled" Value="{Binding FaceValueWarningMessage,Converter={StaticResource CellToolTipConverter}}"/>
+                                </Style>
+                            </TextBox.Style>
+                        </TextBox>
+                        <TextBlock Height="30" Width="60" Margin="0" FontSize="18" HorizontalAlignment="Left" VerticalAlignment="Center" Text="FOB :" TextAlignment="Center">
+                        </TextBlock>
+                        <TextBox Height="30" Width="240" FontSize="18" HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding FOBValue}" TextAlignment="Right" Margin="5,0,0,0"
+                     Background="{Binding FOBValueWarningMessage, Converter={StaticResource CellColorConverter}}">
+                            <TextBox.ToolTip>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding FOBValueWarningMessage}"/>
+                                </StackPanel>
+                            </TextBox.ToolTip>
+                            <TextBox.Style>
+                                <Style>
+                                    <Setter Property="ToolTipService.IsEnabled" Value="{Binding FOBValueWarningMessage,Converter={StaticResource CellToolTipConverter}}"/>
+                                </Style>
+                            </TextBox.Style>
+                        </TextBox>
+                            <ComboBox x:Name="PrimeCurrencyCombobox"
+                                Height="30"
+                                Width="80"
+                                Margin="0,0,0,0"
+                                FontSize="16"
+                                HorizontalAlignment="Center">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding Code}" FontSize="15" Margin="0,0,0,0"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                            <Button
+                            Height="30"
+                            Width="60"
+                            Margin="20,0,0,0"
+                            FontSize="18"
+                            HorizontalAlignment="Left"
+                            Click="OnClickCalc"
+                            Content="計算"
+                            Tag="CalculateButton"/>
+                                    <Button
+                            Height="30"
+                            Width="60"
+                            Margin="20,0,0,0"
+                            FontSize="18"
+                            HorizontalAlignment="Right"
+                            Click="OnClickReset"
+                            Content="リセット"/>
+                    </StackPanel>
+                        <StackPanel Grid.Row="2" Margin="0,0,0,0">
+                            <DataGrid x:Name="InvoiceDataGrid" Margin="0,0,0,0" AutoGenerateColumns="False" CanUserAddRows="False" CanUserSortColumns="False" CanUserReorderColumns="False"
+                                      SelectionUnit ="Cell">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="No" Binding="{Binding IndexNoString}">
+                                        <DataGridTextColumn.CellStyle>
+                                            <Style TargetType="DataGridCell">
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <MultiBinding Converter="{StaticResource InvoiceFlagConverter}">
+                                                            <MultiBinding.Bindings>
+                                                                <Binding Path="DeclValid"/>
+                                                                <Binding Path="DataValid"/>
+                                                            </MultiBinding.Bindings>
+                                                        </MultiBinding>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </DataGridTextColumn.CellStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Header="InvNo" Binding="{Binding InvoiceNo, UpdateSourceTrigger=PropertyChanged}">
+                                        <DataGridTextColumn.EditingElementStyle>
+                                            <Style TargetType="TextBox">
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <Binding Path="InvoiceNoWarningMessage" Converter="{StaticResource CellColorConverterOrange}"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </DataGridTextColumn.EditingElementStyle>
+                                        <DataGridTextColumn.CellStyle>
+                                            <Style TargetType="DataGridCell">
+                                                <Setter Property="ToolTip">
+                                                    <Setter.Value>
+                                                        <ToolTip>
+                                                            <StackPanel>
+                                                                <TextBlock Text="{Binding InvoiceNoWarningMessage}"/>
+                                                            </StackPanel>
+                                                        </ToolTip>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <Binding Path="ExistWarningMessage" Converter="{StaticResource CellColorConverterOrange}"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Setter Property="ToolTipService.IsEnabled" Value="{Binding InvoiceNoWarningMessage,Converter={StaticResource CellToolTipConverter}}"/>
+                                            </Style>
+                                        </DataGridTextColumn.CellStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Header="HSCD キー" Binding="{Binding HSCodeKey, UpdateSourceTrigger=PropertyChanged}">
+                                        <DataGridTextColumn.EditingElementStyle>
+                                            <Style TargetType="TextBox">
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <Binding Path="HSCodeKeyWarningMessage" Converter="{StaticResource CellColorConverterOrange}"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </DataGridTextColumn.EditingElementStyle>
+                                        <DataGridTextColumn.CellStyle>
+                                            <Style TargetType="DataGridCell">
+                                                <Setter Property="ToolTip">
+                                                    <Setter.Value>
+                                                        <ToolTip>
+                                                            <StackPanel>
+                                                                <TextBlock Text="{Binding HSCodeKeyWarningMessage}"/>
+                                                            </StackPanel>
+                                                        </ToolTip>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <Binding Path="HSCodeKeyWarningMessage" Converter="{StaticResource CellColorConverterOrange}"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Setter Property="ToolTipService.IsEnabled" Value="{Binding HSCodeKeyWarningMessage,Converter={StaticResource CellToolTipConverter}}"/>
+                                            </Style>
+                                        </DataGridTextColumn.CellStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Header="HSCD hint" Binding="{Binding HSCodeClue, UpdateSourceTrigger=PropertyChanged}">
+                                        <DataGridTextColumn.EditingElementStyle>
+                                            <Style TargetType="TextBox">
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <Binding Path="HSCodeClueWarningMessage" Converter="{StaticResource CellColorConverter}"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </DataGridTextColumn.EditingElementStyle>
+                                        <DataGridTextColumn.CellStyle>
+                                            <Style TargetType="DataGridCell">
+                                                <Setter Property="ToolTip">
+                                                    <Setter.Value>
+                                                        <ToolTip>
+                                                            <StackPanel>
+                                                                <TextBlock Text="{Binding HSCodeClueWarningMessage}"/>
+                                                            </StackPanel>
+                                                        </ToolTip>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <Binding Path="HSCodeClueWarningMessage" Converter="{StaticResource CellColorConverterOrange}"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Setter Property="ToolTipService.IsEnabled" Value="{Binding HSCodeClueWarningMessage,Converter={StaticResource CellToolTipConverter}}"/>
+                                            </Style>
+                                        </DataGridTextColumn.CellStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Header="N/W" Binding="{Binding NetWeight, UpdateSourceTrigger=PropertyChanged}">
+                                        <DataGridTextColumn.EditingElementStyle>
+                                            <Style TargetType="TextBox">
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <Binding Path="NetWeightWarningMessage" Converter="{StaticResource CellColorConverter}"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </DataGridTextColumn.EditingElementStyle>
+                                        <DataGridTextColumn.CellStyle>
+                                            <Style TargetType="DataGridCell">
+                                                <Setter Property="ToolTip">
+                                                    <Setter.Value>
+                                                        <ToolTip>
+                                                            <StackPanel>
+                                                                <TextBlock Text="{Binding NetWeightWarningMessage}"/>
+                                                            </StackPanel>
+                                                        </ToolTip>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <Binding Path="NetWeightWarningMessage" Converter="{StaticResource CellColorConverter}"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Setter Property="ToolTipService.IsEnabled" Value="{Binding NetWeightWarningMessage,Converter={StaticResource CellToolTipConverter}}"/>
+                                            </Style>
+                                        </DataGridTextColumn.CellStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Header="Qty" Binding="{Binding Number, UpdateSourceTrigger=PropertyChanged}">
+                                        <DataGridTextColumn.EditingElementStyle>
+                                            <Style TargetType="TextBox">
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <Binding Path="NumberWarningMessage" Converter="{StaticResource CellColorConverter}"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </DataGridTextColumn.EditingElementStyle>
+                                        <DataGridTextColumn.CellStyle>
+                                            <Style TargetType="DataGridCell">
+                                                <Setter Property="ToolTip">
+                                                    <Setter.Value>
+                                                        <ToolTip>
+                                                            <StackPanel>
+                                                                <TextBlock Text="{Binding NumberWarningMessage}"/>
+                                                            </StackPanel>
+                                                        </ToolTip>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <Binding Path="NumberWarningMessage" Converter="{StaticResource CellColorConverter}"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Setter Property="ToolTipService.IsEnabled" Value="{Binding NumberWarningMessage,Converter={StaticResource CellToolTipConverter}}"/>
+                                            </Style>
+                                        </DataGridTextColumn.CellStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Header="金額" Binding="{Binding Amount, UpdateSourceTrigger=PropertyChanged}">
+                                        <DataGridTextColumn.EditingElementStyle>
+                                            <Style TargetType="TextBox">
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <Binding Path="AmountWarningMessage" Converter="{StaticResource CellColorConverter}"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </DataGridTextColumn.EditingElementStyle>
+                                        <DataGridTextColumn.CellStyle>
+                                            <Style TargetType="DataGridCell">
+                                                <Setter Property="ToolTip">
+                                                    <Setter.Value>
+                                                        <ToolTip>
+                                                            <StackPanel>
+                                                                <TextBlock Text="{Binding AmountWarningMessage}"/>
+                                                            </StackPanel>
+                                                        </ToolTip>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <Binding Path="AmountWarningMessage" Converter="{StaticResource CellColorConverter}"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Setter Property="ToolTipService.IsEnabled" Value="{Binding AmountWarningMessage,Converter={StaticResource CellToolTipConverter}}"/>
+                                            </Style>
+                                        </DataGridTextColumn.CellStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Binding="{Binding Currency, UpdateSourceTrigger=PropertyChanged}">
+                                        <DataGridTextColumn.Header>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="通貨">
+                                                </TextBlock>
+                                                <Button Background="Transparent" BorderThickness="0,0,0,0" Margin="0,0,2.5,0"
+                                                Tag="CURRENCY"
+                                                Click="OnClickInvoiceDownArrow"
+                                                HorizontalAlignment="Center">
+                                                    <Viewbox Width="16px" Height="16px">
+                                                        <Image Source="{StaticResource downArrowIcon}"/>
+                                                    </Viewbox>
+                                                </Button>
+                                            </StackPanel>
+                                        </DataGridTextColumn.Header>
+                                        <DataGridTextColumn.EditingElementStyle>
+                                            <Style TargetType="TextBox">
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <Binding Path="CurrencyWarningMessage" Converter="{StaticResource CellColorConverter}"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </DataGridTextColumn.EditingElementStyle>
+                                        <DataGridTextColumn.CellStyle>
+                                            <Style TargetType="DataGridCell">
+                                                <Setter Property="ToolTip">
+                                                    <Setter.Value>
+                                                        <ToolTip>
+                                                            <StackPanel>
+                                                                <TextBlock Text="{Binding CurrencyWarningMessage}"/>
+                                                            </StackPanel>
+                                                        </ToolTip>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <Binding Path="CurrencyWarningMessage" Converter="{StaticResource CellColorConverter}"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Setter Property="ToolTipService.IsEnabled" Value="{Binding CurrencyWarningMessage,Converter={StaticResource CellToolTipConverter}}"/>
+                                            </Style>
+                                        </DataGridTextColumn.CellStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Binding="{Binding Origin, UpdateSourceTrigger=PropertyChanged}">
+                                        <DataGridTextColumn.Header>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="原産国">
+                                                </TextBlock>
+                                                <Button Background="Transparent" BorderThickness="0,0,0,0" Margin="0,0,2.5,0"
+                                                Tag="ORIGIN"
+                                                Click="OnClickInvoiceDownArrow"
+                                                HorizontalAlignment="Center">
+                                                    <Viewbox Width="16px" Height="16px">
+                                                        <Image Source="{StaticResource downArrowIcon}"/>
+                                                    </Viewbox>
+                                                </Button>
+                                            </StackPanel>
+                                        </DataGridTextColumn.Header>
+                                        <DataGridTextColumn.EditingElementStyle>
+                                            <Style TargetType="TextBox">
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <Binding Path="OriginWarningMessage" Converter="{StaticResource CellColorConverter}"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </DataGridTextColumn.EditingElementStyle>
+                                        <DataGridTextColumn.CellStyle>
+                                            <Style TargetType="DataGridCell">
+                                                <Setter Property="ToolTip">
+                                                    <Setter.Value>
+                                                        <ToolTip>
+                                                            <StackPanel>
+                                                                <TextBlock Text="{Binding OriginWarningMessage}"/>
+                                                            </StackPanel>
+                                                        </ToolTip>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <Binding Path="OriginWarningMessage" Converter="{StaticResource CellColorConverter}"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Setter Property="ToolTipService.IsEnabled" Value="{Binding OriginWarningMessage,Converter={StaticResource CellToolTipConverter}}"/>
+                                            </Style>
+                                        </DataGridTextColumn.CellStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Header="説明" Binding="{Binding Description, UpdateSourceTrigger=PropertyChanged}">
+                                        <DataGridTextColumn.EditingElementStyle>
+                                            <Style TargetType="TextBox">
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <Binding Path="DescriptionWarningMessage" Converter="{StaticResource CellColorConverterOrange}"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </DataGridTextColumn.EditingElementStyle>
+                                        <DataGridTextColumn.CellStyle>
+                                            <Style TargetType="DataGridCell">
+                                                <Setter Property="ToolTip">
+                                                    <Setter.Value>
+                                                        <ToolTip>
+                                                            <StackPanel>
+                                                                <TextBlock Text="{Binding DescriptionWarningMessage}"/>
+                                                            </StackPanel>
+                                                        </ToolTip>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <Binding Path="DescriptionWarningMessage" Converter="{StaticResource CellColorConverterOrange}"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Setter Property="ToolTipService.IsEnabled" Value="{Binding DescriptionWarningMessage,Converter={StaticResource CellToolTipConverter}}"/>
+                                            </Style>
+                                        </DataGridTextColumn.CellStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Header="HSCD(提案)" Binding="{Binding HSCodeSuggestion, UpdateSourceTrigger=PropertyChanged}">
+                                        <DataGridTextColumn.EditingElementStyle>
+                                            <Style TargetType="TextBox">
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <Binding Path="HSCodeSuggestionWarningMessage" Converter="{StaticResource CellColorConverterOrange}"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </DataGridTextColumn.EditingElementStyle>
+                                        <DataGridTextColumn.CellStyle>
+                                            <Style TargetType="DataGridCell">
+                                                <Setter Property="ToolTip">
+                                                    <Setter.Value>
+                                                        <ToolTip>
+                                                            <StackPanel>
+                                                                <TextBlock Text="{Binding HSCodeSuggestionWarningMessage}"/>
+                                                            </StackPanel>
+                                                        </ToolTip>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <Binding Path="HSCodeSuggestionWarningMessage" Converter="{StaticResource CellColorConverterOrange}"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Setter Property="ToolTipService.IsEnabled" Value="{Binding HSCodeSuggestionWarningMessage,Converter={StaticResource CellToolTipConverter}}"/>
+                                            </Style>
+                                        </DataGridTextColumn.CellStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTemplateColumn>
+                                        <DataGridTemplateColumn.Header>
+                                            <Button Background="Transparent" BorderThickness="0,0,0,0" Margin="0,0,2.5,0"
+                                                Tag="ALL"
+                                                Click="OnClickInvoiceRightArrow"
+                                                HorizontalAlignment="Center">
+                                                <Viewbox Width="16px" Height="16px">
+                                                    <Image Source="{StaticResource rightArrowIcon}"/>
+                                                </Viewbox>
+                                            </Button>
+                                        </DataGridTemplateColumn.Header>
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal" Width="30">
+                                                    <Button Background="Transparent" BorderThickness="0,0,0,0" Margin="0,0,2.5,0"
+                                    Tag="{Binding IndexNoString}"
+                                    Click="OnClickInvoiceRightArrow"
+                                    HorizontalAlignment="Center">
+                                                        <Viewbox Width="16px" Height="16px">
+                                                            <Image Source="{StaticResource rightArrowIcon}"/>
+                                                        </Viewbox>
+                                                    </Button>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTextColumn Header="HSCD(登録)" Binding="{Binding HSCode, UpdateSourceTrigger=PropertyChanged}">
+                                        <DataGridTextColumn.EditingElementStyle>
+                                            <Style TargetType="TextBox">
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <Binding Path="HSCodeWarningMessage" Converter="{StaticResource CellColorConverter}"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </DataGridTextColumn.EditingElementStyle>
+                                        <DataGridTextColumn.CellStyle>
+                                            <Style TargetType="DataGridCell">
+                                                <Setter Property="ToolTip">
+                                                    <Setter.Value>
+                                                        <ToolTip>
+                                                            <StackPanel>
+                                                                <TextBlock Text="{Binding HSCodeWarningMessage}"/>
+                                                            </StackPanel>
+                                                        </ToolTip>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <Binding Path="HSCodeWarningMessage" Converter="{StaticResource CellColorConverter}"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Setter Property="ToolTipService.IsEnabled" Value="{Binding HSCodeWarningMessage,Converter={StaticResource CellToolTipConverter}}"/>
+                                            </Style>
+                                        </DataGridTextColumn.CellStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Header="末尾" IsReadOnly="True">
+                                        <DataGridTextColumn.CellStyle>
+                                            <Style TargetType="DataGridCell">
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <MultiBinding Converter="{StaticResource CellRadioConverter}">
+                                                            <MultiBinding.Bindings>
+                                                                <Binding Path="IsDomestic"/>
+                                                                <Binding Path="IsForeign"/>
+                                                                <Binding Path="IsMinorForced"/>
+                                                            </MultiBinding.Bindings>
+                                                        </MultiBinding>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </DataGridTextColumn.CellStyle>
+                                        <DataGridTextColumn.Binding>
+                                            <MultiBinding Converter="{StaticResource CellConverter_Postfix}">
+                                                <MultiBinding.Bindings>
+                                                    <Binding Path="IsDomestic"/>
+                                                    <Binding Path="IsForeign"/>
+                                                    <Binding Path="IsMinorForced"/>
+                                                </MultiBinding.Bindings>
+                                            </MultiBinding>
+                                        </DataGridTextColumn.Binding>
+                                    </DataGridTextColumn>
+                                    <DataGridTemplateColumn Header="国,Y,E">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <RadioButton GroupName="{Binding IndexNoString}" IsChecked="{Binding IsDomestic,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" />
+                                                    <RadioButton GroupName="{Binding IndexNoString}" IsChecked="{Binding IsForeign,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" />
+                                                    <RadioButton GroupName="{Binding IndexNoString}" IsChecked="{Binding IsMinorForced,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" />
+                                                    <StackPanel.Background>
+                                                        <MultiBinding Converter="{StaticResource CellRadioConverter}">
+                                                            <MultiBinding.Bindings>
+                                                                <Binding Path="IsDomestic"/>
+                                                                <Binding Path="IsForeign"/>
+                                                                <Binding Path="IsMinorForced"/>
+                                                            </MultiBinding.Bindings>
+                                                        </MultiBinding>
+                                                    </StackPanel.Background>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTemplateColumn>
+                                        <DataGridTemplateColumn.Header>
+                                            <StackPanel Orientation="Horizontal">
+                                                <Button Background="Transparent" BorderThickness="0,0,0,0" Margin="0,0,2.5,0"
+                                        Tag="IVHeader"     
+                                        Click="OnClickIVPlus">
+                                                    <Viewbox Width="16px" Height="16px">
+                                                        <Image Source="{StaticResource plusIcon}"/>
+                                                    </Viewbox>
+                                                </Button>
+                                                <Button Background="Transparent" BorderThickness="0,0,0,0" Margin="0,0,2.5,0"
+                                        Tag="IVHeader"
+                                        Click="OnClickIVMinus">
+                                                    <Viewbox Width="16px" Height="16px">
+                                                        <Image Source="{StaticResource minusIcon}"/>
+                                                    </Viewbox>
+                                                </Button>
+                                            </StackPanel>
+                                        </DataGridTemplateColumn.Header>
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal" Width="60">
+                                                    <Button Background="Transparent" BorderThickness="0,0,0,0" Margin="0,0,2.5,0"
+                                            Tag="{Binding IndexNoString}"
+                                            Click="OnClickIVPlus">
+                                                        <Viewbox Width="16px" Height="16px">
+                                                            <Image Source="{StaticResource plusIcon}"/>
+                                                        </Viewbox>
+                                                    </Button>
+                                                    <Button Background="Transparent" BorderThickness="0,0,0,0" Margin="0,0,2.5,0"
+                                            Tag="{Binding IndexNoString}"
+                                            Click="OnClickIVMinus">
+                                                        <Viewbox Width="16px" Height="16px">
+                                                            <Image Source="{StaticResource minusIcon}"/>
+                                                        </Viewbox>
+                                                    </Button>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </StackPanel>
+                </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+            <TabItem Header="PackingList">
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Margin="0,0,0,0">
+                    <StackPanel Orientation="Vertical">
+                        <StackPanel Orientation="Horizontal"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Panel.ZIndex="10">
+                            <TextBlock Height="30" Width="60" Margin="0" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" Text="合計" TextAlignment="Center"></TextBlock>
+                            <TextBlock Height="30" Width="60" Margin="0" FontSize="18" HorizontalAlignment="Left" VerticalAlignment="Center" Text="N/W :" TextAlignment="Center"/>
+                            <TextBox Height="30" Width="80" FontSize="18" HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding TotalNetWeight}" TextAlignment="Right" Margin="5,0,0,0" IsReadOnly="True"
+                             Background="{Binding TotalNetWeightWarningMessage, Converter={StaticResource CellColorConverter}}">
+                                <TextBox.ToolTip>
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding TotalNetWeightWarningMessage}"/>
+                                    </StackPanel>
+                                </TextBox.ToolTip>
+                                <TextBox.Style>
+                                    <Style>
+                                        <Setter Property="ToolTipService.IsEnabled" Value="{Binding TotalNetWeightWarningMessage,Converter={StaticResource CellToolTipConverter}}"/>
+                                    </Style>
+                                </TextBox.Style>
+                            </TextBox>
+                            <TextBlock Height="30" Width="60" Margin="0" FontSize="18" HorizontalAlignment="Left" VerticalAlignment="Center" Text="Qty :" TextAlignment="Center"/>
+                            <TextBox Height="30" Width="80" FontSize="18" HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding TotalQuantity}" TextAlignment="Right" Margin="5,0,0,0" IsReadOnly="True"
+                            Background="{Binding TotalQuantityWarningMessage, Converter={StaticResource CellColorConverter}}">
+                                <TextBox.ToolTip>
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding TotalQuantityWarningMessage}"/>
+                                    </StackPanel>
+                                </TextBox.ToolTip>
+                                <TextBox.Style>
+                                    <Style>
+                                        <Setter Property="ToolTipService.IsEnabled" Value="{Binding TotalQuantityWarningMessage,Converter={StaticResource CellToolTipConverter}}"/>
+                                    </Style>
+                                </TextBox.Style>
+                            </TextBox>
+                            <Button
+                        Height="30"
+                        Width="60"
+                        Margin="300,0,0,0"
+                        FontSize="18"
+                        HorizontalAlignment="Left"
+                        Click="OnClickCalc"
+                        Content="計算"
+                        Tag="CalculateButton"/>
+                            <Button
+                            Height="30"
+                            Width="60"
+                            Margin="20,0,0,0"
+                            FontSize="18"
+                            HorizontalAlignment="Right"
+                            Click="OnClickReset"
+                            Content="リセット"/>
+                        </StackPanel>
+                        <StackPanel Grid.Row="2">
+                            <DataGrid x:Name="PackingListDataGrid" Margin="0,0,0,0" AutoGenerateColumns="False" CanUserAddRows="False" CanUserSortColumns="False" CanUserReorderColumns="False"
+                                      SelectionUnit="Cell">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="No" Binding="{Binding IndexNoString}">
+                                        <DataGridTextColumn.CellStyle>
+                                            <Style TargetType="DataGridCell">
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <MultiBinding Converter="{StaticResource InvoiceFlagConverter}">
+                                                            <MultiBinding.Bindings>
+                                                                <Binding Path="DeclValid"/>
+                                                                <Binding Path="DataValid"/>
+                                                            </MultiBinding.Bindings>
+                                                        </MultiBinding>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </DataGridTextColumn.CellStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Header="InvNo" Binding="{Binding InvoiceNo, UpdateSourceTrigger=PropertyChanged}">
+                                        <DataGridTextColumn.EditingElementStyle>
+                                            <Style TargetType="TextBox">
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <Binding Path="InvoiceNoWarningMessage" Converter="{StaticResource CellColorConverterOrange}"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </DataGridTextColumn.EditingElementStyle>
+                                        <DataGridTextColumn.CellStyle>
+                                            <Style TargetType="DataGridCell">
+                                                <Setter Property="ToolTip">
+                                                    <Setter.Value>
+                                                        <ToolTip>
+                                                            <StackPanel>
+                                                                <TextBlock Text="{Binding InvoiceNoWarningMessage}"/>
+                                                            </StackPanel>
+                                                        </ToolTip>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <Binding Path="ExistWarningMessage" Converter="{StaticResource CellColorConverterOrange}"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Setter Property="ToolTipService.IsEnabled" Value="{Binding InvoiceNoWarningMessage,Converter={StaticResource CellToolTipConverter}}"/>
+                                            </Style>
+                                        </DataGridTextColumn.CellStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Header="HSCD キー" Binding="{Binding HSCodeKey, UpdateSourceTrigger=PropertyChanged}">
+                                        <DataGridTextColumn.EditingElementStyle>
+                                            <Style TargetType="TextBox">
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <Binding Path="HSCodeKeyWarningMessage" Converter="{StaticResource CellColorConverterOrange}"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </DataGridTextColumn.EditingElementStyle>
+                                        <DataGridTextColumn.CellStyle>
+                                            <Style TargetType="DataGridCell">
+                                                <Setter Property="ToolTip">
+                                                    <Setter.Value>
+                                                        <ToolTip>
+                                                            <StackPanel>
+                                                                <TextBlock Text="{Binding HSCodeKeyWarningMessage}"/>
+                                                            </StackPanel>
+                                                        </ToolTip>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <Binding Path="HSCodeKeyWarningMessage" Converter="{StaticResource CellColorConverterOrange}"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Setter Property="ToolTipService.IsEnabled" Value="{Binding HSCodeKeyWarningMessage,Converter={StaticResource CellToolTipConverter}}"/>
+                                            </Style>
+                                        </DataGridTextColumn.CellStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Header="HSCD hint" Binding="{Binding HSCodeClue, UpdateSourceTrigger=PropertyChanged}">
+                                        <DataGridTextColumn.EditingElementStyle>
+                                            <Style TargetType="TextBox">
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <Binding Path="HSCodeClueWarningMessage" Converter="{StaticResource CellColorConverter}"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </DataGridTextColumn.EditingElementStyle>
+                                        <DataGridTextColumn.CellStyle>
+                                            <Style TargetType="DataGridCell">
+                                                <Setter Property="ToolTip">
+                                                    <Setter.Value>
+                                                        <ToolTip>
+                                                            <StackPanel>
+                                                                <TextBlock Text="{Binding HSCodeClueWarningMessage}"/>
+                                                            </StackPanel>
+                                                        </ToolTip>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <Binding Path="HSCodeClueWarningMessage" Converter="{StaticResource CellColorConverterOrange}"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Setter Property="ToolTipService.IsEnabled" Value="{Binding HSCodeClueWarningMessage,Converter={StaticResource CellToolTipConverter}}"/>
+                                            </Style>
+                                        </DataGridTextColumn.CellStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Header="N/W" Binding="{Binding NetWeight, UpdateSourceTrigger=PropertyChanged}">
+                                        <DataGridTextColumn.EditingElementStyle>
+                                            <Style TargetType="TextBox">
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <Binding Path="NetWeightWarningMessage" Converter="{StaticResource CellColorConverter}"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </DataGridTextColumn.EditingElementStyle>
+                                        <DataGridTextColumn.CellStyle>
+                                            <Style TargetType="DataGridCell">
+                                                <Setter Property="ToolTip">
+                                                    <Setter.Value>
+                                                        <ToolTip>
+                                                            <StackPanel>
+                                                                <TextBlock Text="{Binding NetWeightWarningMessage}"/>
+                                                            </StackPanel>
+                                                        </ToolTip>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <Binding Path="NetWeightWarningMessage" Converter="{StaticResource CellColorConverter}"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Setter Property="ToolTipService.IsEnabled" Value="{Binding NetWeightWarningMessage,Converter={StaticResource CellToolTipConverter}}"/>
+                                            </Style>
+                                        </DataGridTextColumn.CellStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Header="Qty" Binding="{Binding Number, UpdateSourceTrigger=PropertyChanged}">
+                                        <DataGridTextColumn.EditingElementStyle>
+                                            <Style TargetType="TextBox">
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <Binding Path="NumberWarningMessage" Converter="{StaticResource CellColorConverter}"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </DataGridTextColumn.EditingElementStyle>
+                                        <DataGridTextColumn.CellStyle>
+                                            <Style TargetType="DataGridCell">
+                                                <Setter Property="ToolTip">
+                                                    <Setter.Value>
+                                                        <ToolTip>
+                                                            <StackPanel>
+                                                                <TextBlock Text="{Binding NumberWarningMessage}"/>
+                                                            </StackPanel>
+                                                        </ToolTip>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <Binding Path="NumberWarningMessage" Converter="{StaticResource CellColorConverter}"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Setter Property="ToolTipService.IsEnabled" Value="{Binding NumberWarningMessage,Converter={StaticResource CellToolTipConverter}}"/>
+                                            </Style>
+                                        </DataGridTextColumn.CellStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn  Binding="{Binding Origin, UpdateSourceTrigger=PropertyChanged}">
+                                        <DataGridTextColumn.Header>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="原産国">
+                                                </TextBlock>
+                                                <Button Background="Transparent" BorderThickness="0,0,0,0" Margin="0,0,2.5,0"
+                                                Tag="ORIGIN"
+                                                Click="OnClickPackingListDownArrow"
+                                                HorizontalAlignment="Center">
+                                                    <Viewbox Width="16px" Height="16px">
+                                                        <Image Source="{StaticResource downArrowIcon}"/>
+                                                    </Viewbox>
+                                                </Button>
+                                            </StackPanel>
+                                        </DataGridTextColumn.Header>
+                                        <DataGridTextColumn.EditingElementStyle>
+                                            <Style TargetType="TextBox">
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <Binding Path="OriginWarningMessage" Converter="{StaticResource CellColorConverter}"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </DataGridTextColumn.EditingElementStyle>
+                                        <DataGridTextColumn.CellStyle>
+                                            <Style TargetType="DataGridCell">
+                                                <Setter Property="ToolTip">
+                                                    <Setter.Value>
+                                                        <ToolTip>
+                                                            <StackPanel>
+                                                                <TextBlock Text="{Binding OriginWarningMessage}"/>
+                                                            </StackPanel>
+                                                        </ToolTip>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <Binding Path="OriginWarningMessage" Converter="{StaticResource CellColorConverter}"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Setter Property="ToolTipService.IsEnabled" Value="{Binding OriginWarningMessage,Converter={StaticResource CellToolTipConverter}}"/>
+                                            </Style>
+                                        </DataGridTextColumn.CellStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Header="説明" Binding="{Binding Description, UpdateSourceTrigger=PropertyChanged}">
+                                        <DataGridTextColumn.EditingElementStyle>
+                                            <Style TargetType="TextBox">
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <Binding Path="DescriptionWarningMessage" Converter="{StaticResource CellColorConverterOrange}"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </DataGridTextColumn.EditingElementStyle>
+                                        <DataGridTextColumn.CellStyle>
+                                            <Style TargetType="DataGridCell">
+                                                <Setter Property="ToolTip">
+                                                    <Setter.Value>
+                                                        <ToolTip>
+                                                            <StackPanel>
+                                                                <TextBlock Text="{Binding DescriptionWarningMessage}"/>
+                                                            </StackPanel>
+                                                        </ToolTip>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <Binding Path="DescriptionWarningMessage" Converter="{StaticResource CellColorConverterOrange}"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Setter Property="ToolTipService.IsEnabled" Value="{Binding DescriptionWarningMessage,Converter={StaticResource CellToolTipConverter}}"/>
+                                            </Style>
+                                        </DataGridTextColumn.CellStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Header="HSCD(提案)" Binding="{Binding HSCodeSuggestion, UpdateSourceTrigger=PropertyChanged}">
+                                        <DataGridTextColumn.EditingElementStyle>
+                                            <Style TargetType="TextBox">
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <Binding Path="HSCodeSuggestionWarningMessage" Converter="{StaticResource CellColorConverterOrange}"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </DataGridTextColumn.EditingElementStyle>
+                                        <DataGridTextColumn.CellStyle>
+                                            <Style TargetType="DataGridCell">
+                                                <Setter Property="ToolTip">
+                                                    <Setter.Value>
+                                                        <ToolTip>
+                                                            <StackPanel>
+                                                                <TextBlock Text="{Binding HSCodeSuggestionWarningMessage}"/>
+                                                            </StackPanel>
+                                                        </ToolTip>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <Binding Path="HSCodeSuggestionWarningMessage" Converter="{StaticResource CellColorConverterOrange}"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Setter Property="ToolTipService.IsEnabled" Value="{Binding HSCodeSuggestionWarningMessage,Converter={StaticResource CellToolTipConverter}}"/>
+                                            </Style>
+                                        </DataGridTextColumn.CellStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTemplateColumn>
+                                        <DataGridTemplateColumn.Header>
+                                            <Button Background="Transparent" BorderThickness="0,0,0,0" Margin="0,0,2.5,0"
+                                Tag="ALL"
+                                Click="OnClickPackingListRightArrow"
+                                HorizontalAlignment="Center">
+                                                <Viewbox Width="16px" Height="16px">
+                                                    <Image Source="{StaticResource rightArrowIcon}"/>
+                                                </Viewbox>
+                                            </Button>
+                                        </DataGridTemplateColumn.Header>
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal" Width="30">
+                                                    <Button Background="Transparent" BorderThickness="0,0,0,0" Margin="0,0,2.5,0"
+                                    Tag="{Binding IndexNoString}"
+                                    Click="OnClickInvoiceRightArrow"
+                                    HorizontalAlignment="Center">
+                                                        <Viewbox Width="16px" Height="16px">
+                                                            <Image Source="{StaticResource rightArrowIcon}"/>
+                                                        </Viewbox>
+                                                    </Button>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTextColumn Header="HSCD" Binding="{Binding HSCode, UpdateSourceTrigger=PropertyChanged}">
+                                        <DataGridTextColumn.EditingElementStyle>
+                                            <Style TargetType="TextBox">
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <Binding Path="HSCodeWarningMessage" Converter="{StaticResource CellColorConverter}"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </DataGridTextColumn.EditingElementStyle>
+                                        <DataGridTextColumn.CellStyle>
+                                            <Style TargetType="DataGridCell">
+                                                <Setter Property="ToolTip">
+                                                    <Setter.Value>
+                                                        <ToolTip>
+                                                            <StackPanel>
+                                                                <TextBlock Text="{Binding HSCodeWarningMessage}"/>
+                                                            </StackPanel>
+                                                        </ToolTip>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <Binding Path="HSCodeWarningMessage" Converter="{StaticResource CellColorConverter}"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Setter Property="ToolTipService.IsEnabled" Value="{Binding HSCodeWarningMessage,Converter={StaticResource CellToolTipConverter}}"/>
+                                            </Style>
+                                        </DataGridTextColumn.CellStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Header="末尾" IsReadOnly="True">
+                                        <DataGridTextColumn.CellStyle>
+                                            <Style TargetType="DataGridCell">
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <MultiBinding Converter="{StaticResource CellRadioConverter}">
+                                                            <MultiBinding.Bindings>
+                                                                <Binding Path="IsDomestic"/>
+                                                                <Binding Path="IsForeign"/>
+                                                                <Binding Path="IsMinorForced"/>
+                                                            </MultiBinding.Bindings>
+                                                        </MultiBinding>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </DataGridTextColumn.CellStyle>
+                                        <DataGridTextColumn.Binding>
+                                            <MultiBinding Converter="{StaticResource CellConverter_Postfix}">
+                                                <MultiBinding.Bindings>
+                                                    <Binding Path="IsDomestic"/>
+                                                    <Binding Path="IsForeign"/>
+                                                    <Binding Path="IsMinorForced"/>
+                                                </MultiBinding.Bindings>
+                                            </MultiBinding>
+                                        </DataGridTextColumn.Binding>
+                                    </DataGridTextColumn>
+                                    <DataGridTemplateColumn Header="国,Y,E">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <RadioButton GroupName="{Binding IndexNoString}" IsChecked="{Binding IsDomestic,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" />
+                                                    <RadioButton GroupName="{Binding IndexNoString}" IsChecked="{Binding IsForeign,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" />
+                                                    <RadioButton GroupName="{Binding IndexNoString}" IsChecked="{Binding IsMinorForced,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" />
+                                                    <StackPanel.Background>
+                                                        <MultiBinding Converter="{StaticResource CellRadioConverter}">
+                                                            <MultiBinding.Bindings>
+                                                                <Binding Path="IsDomestic"/>
+                                                                <Binding Path="IsForeign"/>
+                                                                <Binding Path="IsMinorForced"/>
+                                                            </MultiBinding.Bindings>
+                                                        </MultiBinding>
+                                                    </StackPanel.Background>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTemplateColumn>
+                                        <DataGridTemplateColumn.Header>
+                                            <StackPanel Orientation="Horizontal">
+                                                <Button Background="Transparent" BorderThickness="0,0,0,0" Margin="0,0,2.5,0"
+                                        Tag="PLHeader"     
+                                        Click="OnClickPLPlus">
+                                                    <Viewbox Width="16px" Height="16px">
+                                                        <Image Source="{StaticResource plusIcon}"/>
+                                                    </Viewbox>
+                                                </Button>
+                                                <Button Background="Transparent" BorderThickness="0,0,0,0" Margin="0,0,2.5,0"
+                                        Tag="PLHeader"
+                                        Click="OnClickPLMinus">
+                                                    <Viewbox Width="16px" Height="16px">
+                                                        <Image Source="{StaticResource minusIcon}"/>
+                                                    </Viewbox>
+                                                </Button>
+                                            </StackPanel>
+                                        </DataGridTemplateColumn.Header>
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal" Width="60">
+                                                    <Button Background="Transparent" BorderThickness="0,0,0,0" Margin="0,0,2.5,0"
+                                            Tag="{Binding IndexNoString}"
+                                            Click="OnClickPLPlus">
+                                                        <Viewbox Width="16px" Height="16px">
+                                                            <Image Source="{StaticResource plusIcon}"/>
+                                                        </Viewbox>
+                                                    </Button>
+                                                    <Button Background="Transparent" BorderThickness="0,0,0,0" Margin="0,0,2.5,0"
+                                            Tag="{Binding IndexNoString}"
+                                            Click="OnClickPLMinus">
+                                                        <Viewbox Width="16px" Height="16px">
+                                                            <Image Source="{StaticResource minusIcon}"/>
+                                                        </Viewbox>
+                                                    </Button>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTextColumn  Binding="{Binding Currency, UpdateSourceTrigger=PropertyChanged}">
+                                        <DataGridTextColumn.Header>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="通貨">
+                                                </TextBlock>
+                                                <Button Background="Transparent" BorderThickness="0,0,0,0" Margin="0,0,2.5,0"
+                                                Tag="CURRENCY"
+                                                Click="OnClickPackingListDownArrow"
+                                                HorizontalAlignment="Center">
+                                                    <Viewbox Width="16px" Height="16px">
+                                                        <Image Source="{StaticResource downArrowIcon}"/>
+                                                    </Viewbox>
+                                                </Button>
+                                            </StackPanel>
+                                        </DataGridTextColumn.Header>
+                                        <DataGridTextColumn.EditingElementStyle>
+                                            <Style TargetType="TextBox">
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <Binding Path="CurrencyWarningMessage" Converter="{StaticResource CellColorConverter}"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </DataGridTextColumn.EditingElementStyle>
+                                        <DataGridTextColumn.CellStyle>
+                                            <Style TargetType="DataGridCell">
+                                                <Setter Property="ToolTip">
+                                                    <Setter.Value>
+                                                        <ToolTip>
+                                                            <StackPanel>
+                                                                <TextBlock Text="{Binding CurrencyWarningMessage}"/>
+                                                            </StackPanel>
+                                                        </ToolTip>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <Binding Path="CurrencyWarningMessage" Converter="{StaticResource CellColorConverter}"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Setter Property="ToolTipService.IsEnabled" Value="{Binding CurrencyWarningMessage,Converter={StaticResource CellToolTipConverter}}"/>
+                                            </Style>
+                                        </DataGridTextColumn.CellStyle>
+                                    </DataGridTextColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>

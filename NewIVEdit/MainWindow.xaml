@@ -1,0 +1,226 @@
+﻿<Window x:Class="NewIVEdit.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:NewIVEdit"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="600" Width="800">
+    <Window.Resources>
+        <DataTemplate x:Key="QrImageTemplate">
+            <Image Source="{Binding Image}" Width="{Binding Width}" Height="{Binding Height}"/>
+        </DataTemplate>
+        <DataTemplate x:Key="TextBlockTemplate">
+            <TextBlock Text="{Binding Text}" Width="{Binding Width}" Height="{Binding Height}" FontSize="{Binding FontSize}"/>
+        </DataTemplate>
+        <DataTemplate x:Key="TextBlockTemplateWViewBox">
+            <Viewbox Width="{Binding Width}" Height="{Binding Height}">
+                <TextBlock Text="{Binding Text}" FontSize="{Binding FontSize}" VerticalAlignment="Center"/>
+            </Viewbox>
+        </DataTemplate>
+        <DataTemplate x:Key="TextBoxTemplate">
+            <TextBox Text="{Binding Text,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Width="{Binding Width}" Height="{Binding Height}" FontSize="{Binding FontSize}"/>
+        </DataTemplate>
+        <DataTemplate x:Key="LineTemplate">
+            <Line X1="{Binding StartX}" X2="{Binding EndX}" Y1="{Binding StartY}" Y2="{Binding EndY}" StrokeThickness="{Binding Pitch}" Stroke="{Binding Color}"/>
+        </DataTemplate>
+        <DataTemplate x:Key="ThumbneilTemplate">
+            <Canvas Height="70" Width="70" MouseEnter="Main_OnThumbneilMouseEnter" MouseLeave="Main_OnThumbneilMouseLeave" Tag="{Binding PageNoString}">
+                <Viewbox Height="70" Width="70" Canvas.Top="0" Canvas.Left="0" Panel.ZIndex="1">
+                    <Button Tag="{Binding PageNoString}" Click="OnClickThumbneil">
+                        <Image Source="{Binding ThumbneilImage}"></Image>
+                    </Button>
+                </Viewbox>
+                <Viewbox Height="20" Width="20" Canvas.Top="0" Canvas.Right="0" Panel.ZIndex="2">
+                    <Button Tag="{Binding PageNoString}" Click="Main_OnClickThumbneilDelete">
+                        <Image Source="{StaticResource cancelButton}"></Image>
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsMouseOver}" Value="true">
+                                        <Setter Property="Visibility" Value="Visible"></Setter>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsMouseOver}" Value="false">
+                                        <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </Viewbox>
+            </Canvas>
+        </DataTemplate>
+        <DataTemplate x:Key="ThumbneilTemplateWCaption">
+            <Button Width="70" Height="70" Tag="{Binding PageNoString}" Click="OnClickThumbneil">
+                <TextBlock Width="70" Height="70" Text="{Binding Caption}" FontSize="10" TextAlignment="Center"></TextBlock>
+            </Button>
+        </DataTemplate>
+        <Style x:Key="QrImageStyle">
+            <Setter Property="Canvas.Left" Value="{Binding X}"/>
+            <Setter Property="Canvas.Top" Value="{Binding Y}"/>
+        </Style>
+        <Style x:Key="TextBlockStyle">
+            <Setter Property="Canvas.Left" Value="{Binding X}"/>
+            <Setter Property="Canvas.Top" Value="{Binding Y}"/>
+        </Style>
+        <Style x:Key="TextBoxStyle">
+            <Setter Property="Canvas.Left" Value="{Binding X}"/>
+            <Setter Property="Canvas.Top" Value="{Binding Y}"/>
+        </Style>
+        <Style x:Key="LineStyle">
+            <Setter Property="Canvas.Left" Value="{Binding X}"/>
+            <Setter Property="Canvas.Top" Value="{Binding Y}"/>
+        </Style>
+        <Style x:Key="ThumbneilStyle">
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition Height="70"></RowDefinition>
+        </Grid.RowDefinitions>
+        <DockPanel Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Panel.ZIndex="100">
+            <Menu DockPanel.Dock="Top">
+                <MenuItem Header="ファイル">
+                    <MenuItem Header="メニュー 1-1"/>
+                </MenuItem>
+                <MenuItem Header="設定">
+                    <MenuItem Header="サーバーの設定"
+                              Click="Menu_ElasticSetting"/>
+                    <MenuItem Header="プリンタの設定"
+                              Click="Menu_PrinterSetting"/>
+                </MenuItem>
+            </Menu>
+        </DockPanel>
+        <StackPanel Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Stretch" Height="72" Orientation="Horizontal" Panel.ZIndex="100">
+            <Button Click="OnClickLoad" Background="Transparent" BorderBrush="Transparent" Opacity="1.0">
+                <Viewbox Height="64" Width="64">
+                    <Image Source="{StaticResource fileIcon}" Height="64" Width="64" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></Image>
+                </Viewbox>
+            </Button>
+            <Button Click="OnClickPen" Background="Transparent" BorderBrush="Transparent" Opacity="1.0">
+                <Viewbox Height="64" Width="64">
+                    <Image Source="{StaticResource penIcon}" Height="64" Width="64" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></Image>
+                </Viewbox>
+            </Button>
+            <Button Click="OnClickData" Background="Transparent" BorderBrush="Transparent" Opacity="1.0">
+                <Viewbox Height="64" Width="64">
+                    <Image Source="{StaticResource sumIcon}" Height="64" Width="64" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></Image>
+                </Viewbox>
+            </Button>
+            <Button Click="OnClickInput" Background="Transparent" BorderBrush="Transparent" Opacity="1.0">
+                <Viewbox Height="64" Width="64">
+                    <Image Source="{StaticResource calcIcon}" Height="64" Width="64" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></Image>
+                </Viewbox>
+            </Button>
+            <Button Click="OnClickCurrency" Background="Transparent" BorderBrush="Transparent" Opacity="1.0">
+                <Viewbox Height="64" Width="64">
+                    <Image Source="{StaticResource moneyIcon}" Height="64" Width="64" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></Image>
+                </Viewbox>
+            </Button>
+            <Button Click="OnClickSavePdf" Background="Transparent" BorderBrush="Transparent" Opacity="1.0">
+                <Viewbox Height="64" Width="64">
+                    <Image Source="{StaticResource pdfIcon}" Height="64" Width="64" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></Image>
+                </Viewbox>
+            </Button>
+            <Button Click="OnClickDocno" Background="Transparent" BorderBrush="Transparent" Opacity="1.0">
+                <Viewbox Height="64" Width="64">
+                    <Image Source="{StaticResource docnoIcon}" Height="64" Width="64" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></Image>
+                </Viewbox>
+            </Button>
+            <Button Click="OnClickTrashcan" Background="Transparent" BorderBrush="Transparent" Opacity="1.0">
+                <Viewbox Height="64" Width="64">
+                    <Image Source="{StaticResource trashCanIcon}" Height="64" Width="64" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></Image>
+                </Viewbox>
+            </Button>
+        </StackPanel>
+        <Canvas Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" x:Name="MainFrame" Panel.ZIndex="0">
+            <Canvas
+                x:Name="MainCanvas"
+                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                MouseWheel="Main_MouseWheel"
+                MouseLeftButtonDown="Main_MouseLeftButtonDown"
+                MouseMove="Main_MouseMove"
+                MouseLeftButtonUp="Main_MouseLeftButtonUp"
+                IsManipulationEnabled="True"
+                Background="Transparent"
+                Panel.ZIndex="1">
+                <Image HorizontalAlignment="Left" VerticalAlignment="Top" Source="{Binding CurrentPage.BackgroundImage}"  Width="{Binding CurrentPage.CanvasWidth}" Height="{Binding CurrentPage.CanvasHeight}"/>
+                <InkCanvas
+                    x:Name="InkCanvas"
+                    Strokes="{Binding CurrentInkStroke}"
+                    Width="{Binding CurrentPage.CanvasWidth}"
+                    Height="{Binding CurrentPage.CanvasHeight}"
+                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                    Background="Transparent"
+                    PreviewMouseLeftButtonDown="InkCanvas_MouseLeftButtonDown"
+                    PreviewMouseLeftButtonUp="InkCanvas_MouseLeftButtonUp"
+                    PreviewMouseWheel="Main_MouseWheel"
+                    PreviewMouseRightButtonDown="InkCanvas_MouseRightButtonDown"
+                    PreviewMouseMove="Main_MouseMove"
+                    PreviewMouseRightButtonUp="InkCanvas_MouseRightButtonUp"
+                    Panel.ZIndex="-1"/>
+                <ItemsControl x:Name="AnnotationCanvas">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Canvas
+                            Width="{Binding CurrentPage.CanvasWidth}"
+                            Height="{Binding CurrentPage.CanvasHeight}"
+                            MouseWheel="Main_MouseWheel"
+                            MouseLeftButtonDown="Main_MouseLeftButtonDown"
+                            MouseMove="Main_MouseMove"
+                            MouseLeftButtonUp="Main_MouseLeftButtonUp"
+                            IsManipulationEnabled="True"
+                            Background="Transparent"
+                            Panel.ZIndex="2"
+                            />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplateSelector>
+                        <local:AnnotationTemplateSelector
+                        QrImageTemplate ="{StaticResource QrImageTemplate}"
+                        TextBlockTemplate ="{StaticResource TextBlockTemplate}"
+                        TextBlockTemplateWViewBox ="{StaticResource TextBlockTemplateWViewBox}"
+                        TextBoxTemplate ="{StaticResource TextBoxTemplate}"
+                        LineTemplate ="{StaticResource LineTemplate}"    
+                    />
+                    </ItemsControl.ItemTemplateSelector>
+                    <ItemsControl.ItemContainerStyleSelector>
+                        <local:AnnotationStyleSelector
+                        QrImageStyle ="{StaticResource QrImageStyle}"
+                        TextBlockStyle ="{StaticResource TextBlockStyle}"
+                        TextBoxStyle ="{StaticResource TextBoxStyle}"
+                        LineStyle ="{StaticResource LineStyle}"
+                    />
+                    </ItemsControl.ItemContainerStyleSelector>
+                </ItemsControl>
+            </Canvas>
+        </Canvas>
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Auto">
+        <ItemsControl x:Name="PageNavigation" >
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel
+                        Height="70"
+                        Orientation="Horizontal"
+                        Panel.ZIndex="2"
+                        Background="LightGray"
+                        Opacity="0.6"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplateSelector>
+                <local:PageNaviTemplateSelector
+                        ThumbneilTemplate ="{StaticResource ThumbneilTemplate}"
+                        ThumbneilTemplateWCaption ="{StaticResource ThumbneilTemplateWCaption}"
+                    />
+            </ItemsControl.ItemTemplateSelector>
+            <ItemsControl.ItemContainerStyleSelector>
+                <local:PageNaviStyleSelector
+                        ThumbneilStyle ="{StaticResource ThumbneilStyle}"
+                    />
+            </ItemsControl.ItemContainerStyleSelector>
+        </ItemsControl>
+        </ScrollViewer>
+    </Grid>
+</Window>

@@ -1,0 +1,30 @@
+﻿<Window x:Class="NewIVEdit.ElasticConfigWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:NewIVEdit"
+        mc:Ignorable="d"
+        Title="ElasticConfigWindow" Height="135" Width="100">
+    <Grid>
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" Width="135" Height="100">
+            <StackPanel Orientation="Horizontal">
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch">
+                    <TextBlock Width="80">
+                        Host Url
+                    </TextBlock>
+                    <TextBox Text="{Binding ElasticHostUri,Mode=TwoWay}"/>
+                </StackPanel>
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch">
+                    <TextBlock Width="50">
+                        Port
+                    </TextBlock>
+                    <TextBox Text="{Binding ElasticHostPortNo,Mode=TwoWay}"/>
+                </StackPanel>
+            </StackPanel>
+            <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="50">
+                <Button DockPanel.Dock="Bottom" HorizontalAlignment="Center" VerticalAlignment="Center" Content="登録" Click="OnClickRegister" Width="40" Height="25"/>
+            </DockPanel>
+        </StackPanel>
+    </Grid>
+</Window>
